@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marvel Superhero Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      main {
+        flex: 1;
+      }
+      .card {
+        height: 100%;
+      }
+      .loading {
+        display: none;
+      }
+      .loading.active {
+        display: block;
+      }
+      .navbar-brand {
+        font-size: 1.25rem;
+        font-weight: bold;
+      }
+      .dark-theme-toggle {
+        font-size: 0.875rem;
+      }
+      .theme-icon-active { display: none; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Marvel Superhero Finder</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="bd-theme" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-circle-half"></i>
+                <span class="ms-2 d-none d-sm-inline" id="bd-theme-text">Toggle Theme</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                <li>
+                  <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
+                    <i class="bi bi-sun-fill me-2 opacity-50 theme-icon"></i>
+                    Light
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
+                    <i class="bi bi-moon-stars-fill me-2 opacity-50 theme-icon"></i>
+                    Dark
+                  </button>
+                </li>
+                <li>
+                  <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto">
+                    <i class="bi bi-circle-half me-2 opacity-50 theme-icon"></i>
+                    Auto
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <h1 class="mb-4">Marvel Superhero Finder</h1>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" id="location-input" class="form-control" placeholder="Enter Location">
+            <button id="search-location" class="btn btn-primary">Search by Location</button>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" id="superhero-input" class="form-control" placeholder="Enter Superhero Name">
+            <button id="search-superhero" class="btn btn-warning">Search by Superhero</button>
+          </div>
+        </div>
+      </div>
+      <div id="loading" class="loading mt-4 text-center">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <div id="results" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4"></div>
+      <div id="error-message" class="alert alert-danger mt-4 d-none"></div>
+    </main>
+
+    <footer class="py-3 mt-4 bg-body-tertiary">
+      <div class="container text-center">
+        <span class="text-body-secondary">© 2023 Marvel Superhero Finder</span>
+      </div>
+    </footer>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+      <symbol id="check2" viewBox="0 0 16 16">
+        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+      </symbol>
+      <symbol id="circle-half" viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+      </symbol>
+      <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
+        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+      </symbol>
+      <symbol id="sun-fill" viewBox="0 0 16 16">
+        <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+      </symbol>
+    </svg>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const API_PUBLIC_KEY='7ffcb5553fbf1a8d6ed9b37c73ee768f';
+      const API_BASE_URL = `https://gateway.marvel.com/v1/public/`;
+
+      const locationInput = document.getElementById('location-input');
+      const superheroInput = document.getElementById('superhero-input');
+      const resultsDiv = document.getElementById('results');
+      const loadingDiv = document.getElementById('loading');
+      const errorMessage = document.getElementById('error-message');
+
+      // Fetch and filter characters based on location (mocked for now)
+      document.getElementById('search-location').addEventListener('click', async () => {
+        const location = locationInput.value;
+        if (!location) return;
+        loadingDiv.classList.add('active');
+        resultsDiv.innerHTML = '';
+        try {
+          // Fetch all characters (API does not support location search directly)
+          const response = await fetch(`${API_BASE_URL}characters?apikey=${API_PUBLIC_KEY}`);
+          const data = await response.json();
+
+          // Mock filtering by location
+          const characters = data.data.results.filter(character =>
+            character.description && character.description.includes(location)
+          );
+
+          if (characters.length === 0) {
+            showError(`No characters found for location: ${location}`);
+            return;
+          }
+
+          characters.forEach(character => {
+            resultsDiv.innerHTML += createCharacterCard(character);
+          });
+        } catch (error) {
+          showError('Failed to fetch characters. Please try again later.');
+        } finally {
+          loadingDiv.classList.remove('active');
+        }
+      });
+
+      // Fetch superhero by name
+      document.getElementById('search-superhero').addEventListener('click', async () => {
+        const superhero = superheroInput.value;
+        if (!superhero) return;
+        loadingDiv.classList.add('active');
+        resultsDiv.innerHTML = '';
+        try {
+          const response = await fetch(`${API_BASE_URL}characters?name=${superhero}&apikey=${API_PUBLIC_KEY}`);
+          const data = await response.json();
+          const hero = data.data.results[0];
+          if (!hero || !hero.name) {
+            showError(`No superhero found with name: ${superhero}`);
+            return;
+          }
+          const antagonist = findAntagonist(hero);  // Placeholder for antagonist mapping logic
+          resultsDiv.innerHTML += createAntagonistCard(antagonist);
+        } catch (error) {
+          showError('Failed to fetch superhero. Please try again later.');
+        } finally {
+          loadingDiv.classList.remove('active');
+        }
+      });
+
+      function createCharacterCard(character) {
+        return `
+          <div class="col">
+            <div class="card h-100">
+              <img src="${character.thumbnail.path}.${character.thumbnail.extension}" class="card-img-top" alt="${character.name}">
+              <div class="card-body">
+                <h5 class="card-title">${character.name}</h5>
+                <p class="card-text">${character.description || 'No description available'}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function createAntagonistCard(antagonist) {
+        return `
+          <div class="col">
+            <div class="card h-100">
+              <img src="${antagonist.image}" class="card-img-top" alt="${antagonist.name}">
+              <div class="card-body">
+                <h5 class="card-title">Antagonist: ${antagonist.name}</h5>
+                <p class="card-text">${antagonist.description}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.classList.remove('d-none');
+        setTimeout(() => errorMessage.classList.add('d-none'), 5000);
+      }
+
+      function findAntagonist(hero) {
+        // Placeholder logic to find antagonist based on your data source
+        return {
+          name: "Mock Antagonist",
+          description: "This is a mock antagonist description.",
+          image: "antagonist_image_url"  // Placeholder image
+        };
+      }
+
+      (() => {
+        'use strict'
+
+        const getStoredTheme = () => localStorage.getItem('theme')
+        const setStoredTheme = (theme) => localStorage.setItem('theme', theme)
+
+        const getPreferredTheme = () => {
+          const storedTheme = getStoredTheme()
+          if (storedTheme) {
+            return storedTheme
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        }
+
+        const setTheme = (theme) => {
+          if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-bs-theme', 'dark')
+          } else {
+            document.documentElement.setAttribute('data-bs-theme', theme)
+          }
+        }
+
+        const showActiveTheme = (theme, focus = false) => {
+          const themeButton = document.querySelector('#bd-theme')
+          const themeIcon = themeButton.querySelector('i')
+          const themeText = themeButton.querySelector('#bd-theme-text')
+          
+          const activeThemeIcon = theme === 'light' ? 'bi-sun-fill' : theme === 'dark' ? 'bi-moon-stars-fill' : 'bi-circle-half'
+          const activeThemeText = theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : 'Auto'
+          
+          themeIcon.className = `bi ${activeThemeIcon}`
+          themeText.textContent = activeThemeText
+
+          const themeSwitcher = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+          document.querySelectorAll('[data-bs-theme-value]').forEach((element) => {
+            element.classList.remove('active')
+            element.setAttribute('aria-pressed', 'false')
+          })
+          themeSwitcher.classList.add('active')
+          themeSwitcher.setAttribute('aria-pressed', 'true')
+        }
+
+        setTheme(getPreferredTheme())
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+          const storedTheme = getStoredTheme()
+          if (storedTheme !== 'light' && storedTheme !== 'dark') {
+            setTheme(getPreferredTheme())
+          }
+        })
+
+        window.addEventListener('DOMContentLoaded', () => {
+          const storedTheme = getStoredTheme()
+          if (storedTheme) {
+            showActiveTheme(storedTheme)
+          }
+
+          document.querySelectorAll('[data-bs-theme-value]').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+              const theme = toggle.getAttribute('data-bs-theme-value')
+              setStoredTheme(theme)
+              setTheme(theme)
+              showActiveTheme(theme, true)
+            })
+          })
+        })
+      })()
+    </script>
+  </body>
+</html>
